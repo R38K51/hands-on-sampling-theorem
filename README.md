@@ -6,6 +6,10 @@ A single static page. Move the knobs to see sampling, aliasing and the Nyquist l
 
 Live page: https://r38k51.github.io/hands-on-sampling-theorem/
 
+![English page: waves and sampling](docs/screenshots/en-top.png)
+
+![Japanese page on a phone](docs/screenshots/ja-mobile.png)
+
 ## Run locally
 
 No dependencies. Node 22 or later is needed only for the build and the tests.
