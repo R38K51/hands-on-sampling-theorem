@@ -1,0 +1,9 @@
+{
+  "name": "hands-on-sampling-theorem",
+  "private": true,
+  "description": "Move the knobs to see sampling and aliasing, calculate PCM data size, and try practice questions.",
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "build": "node tools/build.js"
+  }
+}

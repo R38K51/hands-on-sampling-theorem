@@ -1,0 +1,3 @@
+# Keep LF so that generated pages compare equal on every system.
+* text=auto eol=lf
+*.png binary

@@ -1,0 +1,21 @@
+# Editor and OS files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dependencies (none are used, kept for safety)
+node_modules/
+*.log
+
+# User data files (the page saves nothing, kept for safety)
+*.backup.json
+
+# Playwright CLI scratch files
+.playwright-cli/
+
+# Local environment
+.env
+.env.*

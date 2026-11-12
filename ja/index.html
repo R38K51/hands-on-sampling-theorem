@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>動かして分かる標本化定理｜ナイキスト周波数・折り返し・PCM</title>
+<meta name="description" content="つまみを動かして、標本化定理と折り返し（エイリアス）を目で確かめ、PCM のビット/秒とバイト数を計算し、確認問題で試せる1ページ。">
+<link rel="canonical" href="https://r38k51.github.io/hands-on-sampling-theorem/ja/">
+<link rel="alternate" hreflang="en" href="https://r38k51.github.io/hands-on-sampling-theorem/">
+<link rel="alternate" hreflang="ja" href="https://r38k51.github.io/hands-on-sampling-theorem/ja/">
+<link rel="alternate" hreflang="x-default" href="https://r38k51.github.io/hands-on-sampling-theorem/">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/style.css">
+<script defer src="../i18n/ja.js"></script>
+<script defer src="../assets/core.js"></script>
+<script defer src="../assets/chart.js"></script>
+<script defer src="../assets/app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へ</a>
+<header class="site-header">
+<p class="lang-switch"><a href="../" lang="en" hreflang="en">English</a> | <span aria-current="true" lang="ja">日本語</span></p>
+<h1>動かして分かる標本化定理</h1>
+<p class="subtitle">ナイキスト周波数と PCM を、つまみで確かめる</p>
+<p class="exam-note">応用情報・基本情報の標本化・PCM の計算の理解にも使えます。</p>
+</header>
+<main id="main">
+<noscript><p class="noscript">このページは JavaScript が必要です。</p></noscript>
+
+<section class="block" aria-labelledby="wave-h2">
+<h2 id="wave-h2">波と標本化</h2>
+<div class="chart-box">
+<canvas id="chart" role="img" aria-label="元の波 4 Hz を 20 Hz で標本化。元の波を取り戻せる。"></canvas>
+<p id="chart-status" class="chart-status">図を描いています…</p>
+</div>
+<ul class="legend">
+<li class="legend-wave">元の波（実線）</li>
+<li class="legend-samples">標本点（丸）</li>
+<li class="legend-recon">標本点から作り直した波（破線）</li>
+</ul>
+<div id="verdict" class="verdict">
+<p id="verdict-title" class="verdict-title"></p>
+<p id="verdict-formula" class="verdict-formula mono"></p>
+<p class="verdict-symbols">fs＝標本化周波数、f＝元の波の周波数</p>
+</div>
+<div class="slider">
+<div class="slider-head"><label for="f-input">元の波の周波数 f</label><output id="f-value" class="mono" for="f-input"></output></div>
+<input id="f-input" type="range" min="1" max="20" step="0.5" value="4">
+</div>
+<div class="slider">
+<div class="slider-head"><label for="fs-input">標本化周波数 fs</label><output id="fs-value" class="mono" for="fs-input"></output></div>
+<input id="fs-input" type="range" min="1" max="40" step="0.5" value="20">
+</div>
+<div id="verdict-note" class="verdict verdict-note">
+<p id="verdict-text" class="verdict-text"></p>
+</div>
+<p id="verdict-live" class="visually-hidden" role="status" aria-live="polite"></p>
+<p class="preset-lead">早見：</p>
+<div class="presets">
+<button type="button" class="preset" data-preset="plenty" data-f="4" data-fs="20" aria-pressed="false">十分に測る</button>
+<button type="button" class="preset" data-preset="just" data-f="4" data-fs="9" aria-pressed="false">ぎりぎり足りる</button>
+<button type="button" class="preset" data-preset="exact" data-f="4" data-fs="8" aria-pressed="false">ちょうど2倍</button>
+<button type="button" class="preset" data-preset="few" data-f="7" data-fs="8" aria-pressed="false">足りない（折り返し）</button>
+</div>
+</section>
+
+<section class="block" aria-labelledby="why-h2">
+<h2 id="why-h2">なぜ音楽 CD は 44.1 kHz なのか</h2>
+<p>人の耳が聞こえるのは、およそ 20 kHz まで。標本化周波数はその2倍より大きくする必要があるので、40 kHz 強です。音楽 CD の 44.1 kHz は、低域フィルタのための幅を見込んだ値です。この値そのものは、当時の録音機材の都合で決まりました。</p>
+</section>
+
+<section class="block" aria-labelledby="read-h2">
+<h2 id="read-h2">読み方</h2>
+<details class="fold">
+<summary>読み方を開く</summary>
+<ul class="reading">
+<li>標本化定理：波に含まれる最高の周波数を fmax とすると、標本化周波数 fs を fmax の2倍より大きくすれば、元の波を取り戻せます（fs ＞ 2 × fmax）。上の図の f は、この fmax にあたります。</li>
+<li>折り返し（エイリアス）：たとえば 9 Hz の波を 10 Hz で測ると、1 Hz のゆっくりした波に見えます。fs が足りないと、速い波はこのように遅い波に化けます。化けた周波数は、f と「fs の整数倍のうち f に最も近いもの」との差の大きさです（例：9 と 10 の差で 1 Hz）。</li>
+<li>ちょうど2倍は境目です。標本の取り方で波が消えて見えるため、この図では標本点の位置を少しずらして（位相 0.3。波の出だしのずれ）、波が消えないようにしています。</li>
+</ul>
+</details>
+</section>
+
+<section class="block" aria-labelledby="pcm-h2">
+<h2 id="pcm-h2">PCM のデータ量を計算する</h2>
+<p>最高周波数、量子化ビット数、チャネル数を入れると、PCM のデータ量が出ます。標本化周波数は入力しません。fmax の2倍が自動で使われます。</p>
+<div class="examples">
+<button type="button" class="example" data-fmax="4" data-bits="8" data-ch="1" aria-pressed="true">例：電話の音声</button>
+<button type="button" class="example" data-fmax="22.05" data-bits="16" data-ch="2" aria-pressed="false">例：音楽 CD</button>
+</div>
+<p class="note">例は入力値の例です。規格や実際の仕様を保証するものではありません。音楽 CD の例は、CD の 44.1 kHz で計算するため fmax を 22.05 kHz にしています。実際の音は約 20 kHz までです。</p>
+<div class="field">
+<label for="pcm-fmax">音に含まれる最高周波数 fmax <span class="unit">(kHz)</span></label>
+<input id="pcm-fmax" type="text" inputmode="decimal" autocomplete="off" value="4" aria-describedby="pcm-fmax-hint pcm-fmax-error">
+<p id="pcm-fmax-hint" class="hint">音に含まれる最も高い周波数。上の図の f と同じ意味です。</p>
+<p id="pcm-fmax-error" class="field-error"></p>
+</div>
+<div class="field">
+<label for="pcm-bits">量子化ビット数 <span class="unit">(ビット)</span></label>
+<input id="pcm-bits" type="text" inputmode="numeric" autocomplete="off" value="8" aria-describedby="pcm-bits-hint pcm-bits-error">
+<p id="pcm-bits-hint" class="hint">1回の測定値（1標本）を何ビットの数で記録するか。多いほど細かく表せます（8ビット＝256段階、16ビット＝65,536段階）。</p>
+<p id="pcm-bits-error" class="field-error"></p>
+</div>
+<div class="field">
+<label for="pcm-ch">チャネル数</label>
+<input id="pcm-ch" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="pcm-ch-hint pcm-ch-error">
+<p id="pcm-ch-hint" class="hint">音の系統の数。1＝モノラル、2＝ステレオ（左右）。1つ増えるごとに、データ量はその分だけ増えます。</p>
+<p id="pcm-ch-error" class="field-error"></p>
+</div>
+<div class="results">
+<p id="pcm-empty" class="pcm-empty" hidden>3つの値を入れると、結果が出ます。</p>
+<dl>
+<dt>計算に使う標本化周波数（2×fmax）</dt>
+<dd><span id="pcm-r1" class="value mono">—</span><span id="pcm-r1-formula" class="formula"></span></dd>
+<dt>伝送速度（ビット/秒）</dt>
+<dd><span id="pcm-r2" class="value mono">—</span><span class="formula">標本化周波数 × ビット数 × チャネル数</span></dd>
+<dt>1分あたりのデータ量</dt>
+<dd><span id="pcm-r3" class="value mono">—</span><span class="formula">ビット/秒 × 60 ÷ 8</span></dd>
+</dl>
+</div>
+<p id="pcm-live" class="visually-hidden" role="status" aria-live="polite"></p>
+<p class="note">標本化周波数は 2 × fmax の値で計算しています。実際の規格では、これより大きい値を使うことがあります。k と M は 1,000 倍です（1,024 倍ではありません）。</p>
+</section>
+
+<section class="block" aria-labelledby="quiz-h2">
+<h2 id="quiz-h2">確認問題（自作）</h2>
+<p>4問すべて、このページ用に作った問題です。</p>
+<details class="quiz" id="q1" data-q="1" open>
+<summary><span class="quiz-number">問1</span> 最高 10 kHz の成分を含む音を、劣化なくデジタルにしたい。定理の条件で、標本化周波数に必要なのはどれか。</summary>
+<fieldset>
+<legend class="quiz-legend">問1</legend>
+<label class="choice"><input type="radio" name="q1" value="0"> <span class="letter">ア．</span> 5 kHz より大きい値</label>
+<label class="choice"><input type="radio" name="q1" value="1"> <span class="letter">イ．</span> 20 kHz より大きい値</label>
+<label class="choice"><input type="radio" name="q1" value="2"> <span class="letter">ウ．</span> 10 kHz 以上</label>
+<label class="choice"><input type="radio" name="q1" value="3"> <span class="letter">エ．</span> 20 kHz 未満</label>
+</fieldset>
+<div class="quiz-actions"><button type="button" class="check" disabled aria-describedby="q1-hint">答え合わせ</button> <span id="q1-hint" class="hint">答えを選んでください</span></div>
+<div class="quiz-result" id="q1-result" hidden>
+<p class="quiz-verdict"></p>
+<p class="quiz-explain">標本化周波数は最高周波数の2倍より大きくします。10 kHz の2倍は 20 kHz で、ちょうど20 kHz は境目なので、20 kHz より大きい値が条件です。</p>
+<button type="button" class="retry" hidden>選び直す</button>
+</div>
+</details>
+<details class="quiz" id="q2" data-q="2">
+<summary><span class="quiz-number">問2</span> 8 kHz で標本化し、1標本を 8 ビットで表す、1チャネルの音声の伝送速度はどれか。</summary>
+<fieldset>
+<legend class="quiz-legend">問2</legend>
+<label class="choice"><input type="radio" name="q2" value="0"> <span class="letter">ア．</span> 8 kビット/秒</label>
+<label class="choice"><input type="radio" name="q2" value="1"> <span class="letter">イ．</span> 16 kビット/秒</label>
+<label class="choice"><input type="radio" name="q2" value="2"> <span class="letter">ウ．</span> 64 kビット/秒</label>
+<label class="choice"><input type="radio" name="q2" value="3"> <span class="letter">エ．</span> 128 kビット/秒</label>
+</fieldset>
+<div class="quiz-actions"><button type="button" class="check" disabled aria-describedby="q2-hint">答え合わせ</button> <span id="q2-hint" class="hint">答えを選んでください</span></div>
+<div class="quiz-result" id="q2-result" hidden>
+<p class="quiz-verdict"></p>
+<p class="quiz-explain">8,000 標本/秒 × 8 ビット × 1 チャネル ＝ 64,000 ビット/秒 ＝ 64 kビット/秒です。</p>
+<button type="button" class="retry" hidden>選び直す</button>
+</div>
+</details>
+<details class="quiz" id="q3" data-q="3">
+<summary><span class="quiz-number">問3</span> 9 Hz の正弦波を 10 Hz で標本化した。標本点を結ぶと、何 Hz の波に見えるか。</summary>
+<fieldset>
+<legend class="quiz-legend">問3</legend>
+<label class="choice"><input type="radio" name="q3" value="0"> <span class="letter">ア．</span> 1 Hz</label>
+<label class="choice"><input type="radio" name="q3" value="1"> <span class="letter">イ．</span> 9 Hz</label>
+<label class="choice"><input type="radio" name="q3" value="2"> <span class="letter">ウ．</span> 10 Hz</label>
+<label class="choice"><input type="radio" name="q3" value="3"> <span class="letter">エ．</span> 19 Hz</label>
+</fieldset>
+<div class="quiz-actions"><button type="button" class="check" disabled aria-describedby="q3-hint">答え合わせ</button> <span id="q3-hint" class="hint">答えを選んでください</span></div>
+<div class="quiz-result" id="q3-result" hidden>
+<p class="quiz-verdict"></p>
+<p class="quiz-explain">10 Hz は 9 Hz の2倍より小さいので折り返しが起きます。化けて見える周波数は |9 − 10| ＝ 1 Hz です。上の図で f = 9、fs = 10 にして確かめられます。</p>
+<button type="button" class="retry" hidden>選び直す</button>
+</div>
+</details>
+<details class="quiz" id="q4" data-q="4">
+<summary><span class="quiz-number">問4</span> 標本化周波数 44.1 kHz、16 ビット、ステレオ（2チャネル）の音を1分間録音した。データ量は約何 Mバイトか（1 Mバイト＝1,000,000 バイト）。</summary>
+<fieldset>
+<legend class="quiz-legend">問4</legend>
+<label class="choice"><input type="radio" name="q4" value="0"> <span class="letter">ア．</span> 約 1.3 Mバイト</label>
+<label class="choice"><input type="radio" name="q4" value="1"> <span class="letter">イ．</span> 約 2.6 Mバイト</label>
+<label class="choice"><input type="radio" name="q4" value="2"> <span class="letter">ウ．</span> 約 5.3 Mバイト</label>
+<label class="choice"><input type="radio" name="q4" value="3"> <span class="letter">エ．</span> 約 10.6 Mバイト</label>
+</fieldset>
+<div class="quiz-actions"><button type="button" class="check" disabled aria-describedby="q4-hint">答え合わせ</button> <span id="q4-hint" class="hint">答えを選んでください</span></div>
+<div class="quiz-result" id="q4-result" hidden>
+<p class="quiz-verdict"></p>
+<p class="quiz-explain">44,100 × 16 × 2 ＝ 1,411,200 ビット/秒。× 60 ÷ 8 ＝ 10,584,000 バイト、約 10.6 Mバイトです。ビットとバイト（8ビット）の取り違えに注意します。</p>
+<button type="button" class="retry" hidden>選び直す</button>
+</div>
+</details>
+</section>
+</main>
+<footer class="site-footer">
+<p>この問題とデータはこのページ用の自作です。過去問の転載ではありません。IPA（情報処理推進機構）とは関係ありません。</p>
+<p><a href="https://github.com/R38K51/hands-on-sampling-theorem" rel="noopener noreferrer">ソースコード（GitHub）</a></p>
+</footer>
+</body>
+</html>

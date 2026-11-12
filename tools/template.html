@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+<meta http-equiv="Content-Security-Policy" content="{{csp}}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{t:meta.title}}</title>
+<meta name="description" content="{{t:meta.description}}">
+<link rel="canonical" href="{{canonical}}">
+{{hreflang}}
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="{{base}}assets/style.css">
+<script defer src="{{base}}i18n/{{lang}}.js"></script>
+<script defer src="{{base}}assets/core.js"></script>
+<script defer src="{{base}}assets/chart.js"></script>
+<script defer src="{{base}}assets/app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">{{t:skip}}</a>
+<header class="site-header">
+<p class="lang-switch">{{langSwitch}}</p>
+<h1>{{t:h1}}</h1>
+<p class="subtitle">{{t:subtitle}}</p>
+{{examNote}}
+</header>
+<main id="main">
+<noscript><p class="noscript">{{t:noscript}}</p></noscript>
+
+<section class="block" aria-labelledby="wave-h2">
+<h2 id="wave-h2">{{t:wave.h2}}</h2>
+<div class="chart-box">
+<canvas id="chart" role="img" aria-label="{{chartLabel}}"></canvas>
+<p id="chart-status" class="chart-status">{{t:chart.drawing}}</p>
+</div>
+<ul class="legend">
+<li class="legend-wave">{{t:legend.wave}}</li>
+<li class="legend-samples">{{t:legend.samples}}</li>
+<li class="legend-recon">{{t:legend.recon}}</li>
+</ul>
+<div id="verdict" class="verdict">
+<p id="verdict-title" class="verdict-title"></p>
+<p id="verdict-formula" class="verdict-formula mono"></p>
+<p class="verdict-symbols">{{t:verdict.symbols}}</p>
+</div>
+<div class="slider">
+<div class="slider-head"><label for="f-input">{{t:slider.f}}</label><output id="f-value" class="mono" for="f-input"></output></div>
+<input id="f-input" type="range" min="1" max="20" step="0.5" value="4">
+</div>
+<div class="slider">
+<div class="slider-head"><label for="fs-input">{{t:slider.fs}}</label><output id="fs-value" class="mono" for="fs-input"></output></div>
+<input id="fs-input" type="range" min="1" max="40" step="0.5" value="20">
+</div>
+<div id="verdict-note" class="verdict verdict-note">
+<p id="verdict-text" class="verdict-text"></p>
+</div>
+<p id="verdict-live" class="visually-hidden" role="status" aria-live="polite"></p>
+<p class="preset-lead">{{t:preset.lead}}</p>
+<div class="presets">
+{{presets}}
+</div>
+</section>
+
+<section class="block" aria-labelledby="why-h2">
+<h2 id="why-h2">{{t:why.h2}}</h2>
+<p>{{t:why.text}}</p>
+</section>
+
+<section class="block" aria-labelledby="read-h2">
+<h2 id="read-h2">{{t:read.h2}}</h2>
+<details class="fold">
+<summary>{{t:read.summary}}</summary>
+<ul class="reading">
+<li>{{t:read.1}}</li>
+<li>{{t:read.2}}</li>
+<li>{{t:read.3}}</li>
+</ul>
+</details>
+</section>
+
+<section class="block" aria-labelledby="pcm-h2">
+<h2 id="pcm-h2">{{t:pcm.h2}}</h2>
+<p>{{t:pcm.intro}}</p>
+<div class="examples">
+{{examples}}
+</div>
+<p class="note">{{t:pcm.example.note}}</p>
+<div class="field">
+<label for="pcm-fmax">{{t:pcm.fmax.label}} <span class="unit">({{t:pcm.fmax.unit}})</span></label>
+<input id="pcm-fmax" type="text" inputmode="decimal" autocomplete="off" value="{{pcmFmax}}" aria-describedby="pcm-fmax-hint pcm-fmax-error">
+<p id="pcm-fmax-hint" class="hint">{{t:pcm.fmax.hint}}</p>
+<p id="pcm-fmax-error" class="field-error"></p>
+</div>
+<div class="field">
+<label for="pcm-bits">{{t:pcm.bits.label}} <span class="unit">({{t:pcm.bits.unit}})</span></label>
+<input id="pcm-bits" type="text" inputmode="numeric" autocomplete="off" value="{{pcmBits}}" aria-describedby="pcm-bits-hint pcm-bits-error">
+<p id="pcm-bits-hint" class="hint">{{t:pcm.bits.hint}}</p>
+<p id="pcm-bits-error" class="field-error"></p>
+</div>
+<div class="field">
+<label for="pcm-ch">{{t:pcm.ch.label}}</label>
+<input id="pcm-ch" type="text" inputmode="numeric" autocomplete="off" value="{{pcmCh}}" aria-describedby="pcm-ch-hint pcm-ch-error">
+<p id="pcm-ch-hint" class="hint">{{t:pcm.ch.hint}}</p>
+<p id="pcm-ch-error" class="field-error"></p>
+</div>
+<div class="results">
+<p id="pcm-empty" class="pcm-empty" hidden>{{t:pcm.empty}}</p>
+<dl>
+<dt>{{t:pcm.r1.label}}</dt>
+<dd><span id="pcm-r1" class="value mono">{{t:pcm.none}}</span><span id="pcm-r1-formula" class="formula"></span></dd>
+<dt>{{t:pcm.r2.label}}</dt>
+<dd><span id="pcm-r2" class="value mono">{{t:pcm.none}}</span><span class="formula">{{t:pcm.r2.formula}}</span></dd>
+<dt>{{t:pcm.r3.label}}</dt>
+<dd><span id="pcm-r3" class="value mono">{{t:pcm.none}}</span><span class="formula">{{t:pcm.r3.formula}}</span></dd>
+</dl>
+</div>
+<p id="pcm-live" class="visually-hidden" role="status" aria-live="polite"></p>
+<p class="note">{{t:pcm.note}}</p>
+</section>
+
+<section class="block" aria-labelledby="quiz-h2">
+<h2 id="quiz-h2">{{t:quiz.h2}}</h2>
+<p>{{t:quiz.intro}}</p>
+{{quiz}}
+</section>
+</main>
+<footer class="site-footer">
+<p>{{t:footer.original}}</p>
+{{noNetwork}}
+<p><a href="{{repoUrl}}" rel="noopener noreferrer">{{t:footer.source}}</a></p>
+</footer>
+</body>
+</html>

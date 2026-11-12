@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hands-On Sampling Theorem | Nyquist, Aliasing and PCM</title>
+<meta name="description" content="Why is CD audio 44.1 kHz? Move the knobs to see sampling, aliasing and the Nyquist limit, calculate the data size of PCM audio, and test yourself with practice questions. One page.">
+<link rel="canonical" href="https://r38k51.github.io/hands-on-sampling-theorem/">
+<link rel="alternate" hreflang="en" href="https://r38k51.github.io/hands-on-sampling-theorem/">
+<link rel="alternate" hreflang="ja" href="https://r38k51.github.io/hands-on-sampling-theorem/ja/">
+<link rel="alternate" hreflang="x-default" href="https://r38k51.github.io/hands-on-sampling-theorem/">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="i18n/en.js"></script>
+<script defer src="assets/core.js"></script>
+<script defer src="assets/chart.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+<p class="lang-switch"><span aria-current="true" lang="en">English</span> | <a href="ja/" lang="ja" hreflang="ja">日本語</a></p>
+<h1>Hands-On Sampling Theorem</h1>
+<p class="subtitle">Why is CD audio 44.1 kHz? Move the sliders and see.</p>
+</header>
+<main id="main">
+<noscript><p class="noscript">This page needs JavaScript.</p></noscript>
+
+<section class="block" aria-labelledby="wave-h2">
+<h2 id="wave-h2">Waves and sampling</h2>
+<div class="chart-box">
+<canvas id="chart" role="img" aria-label="A 4 Hz wave sampled at 20 Hz. The original wave can be rebuilt."></canvas>
+<p id="chart-status" class="chart-status">Drawing the chart…</p>
+</div>
+<ul class="legend">
+<li class="legend-wave">Original wave (solid line)</li>
+<li class="legend-samples">Samples (dots)</li>
+<li class="legend-recon">Wave rebuilt from the samples (dashed line)</li>
+</ul>
+<div id="verdict" class="verdict">
+<p id="verdict-title" class="verdict-title"></p>
+<p id="verdict-formula" class="verdict-formula mono"></p>
+<p class="verdict-symbols">fs = sampling rate, f = signal frequency</p>
+</div>
+<div class="slider">
+<div class="slider-head"><label for="f-input">Signal frequency f</label><output id="f-value" class="mono" for="f-input"></output></div>
+<input id="f-input" type="range" min="1" max="20" step="0.5" value="4">
+</div>
+<div class="slider">
+<div class="slider-head"><label for="fs-input">Sampling rate fs</label><output id="fs-value" class="mono" for="fs-input"></output></div>
+<input id="fs-input" type="range" min="1" max="40" step="0.5" value="20">
+</div>
+<div id="verdict-note" class="verdict verdict-note">
+<p id="verdict-text" class="verdict-text"></p>
+</div>
+<p id="verdict-live" class="visually-hidden" role="status" aria-live="polite"></p>
+<p class="preset-lead">Presets:</p>
+<div class="presets">
+<button type="button" class="preset" data-preset="plenty" data-f="4" data-fs="20" aria-pressed="false">Plenty</button>
+<button type="button" class="preset" data-preset="just" data-f="4" data-fs="9" aria-pressed="false">Just enough</button>
+<button type="button" class="preset" data-preset="exact" data-f="4" data-fs="8" aria-pressed="false">Exactly 2×</button>
+<button type="button" class="preset" data-preset="few" data-f="7" data-fs="8" aria-pressed="false">Too low (aliasing)</button>
+</div>
+</section>
+
+<section class="block" aria-labelledby="why-h2">
+<h2 id="why-h2">Why is CD audio 44.1 kHz?</h2>
+<p>Human hearing reaches about 20 kHz. The theorem needs a rate above 2 × 20 kHz, so over 40 kHz. CD audio uses 44.1 kHz, which leaves extra width for a low-pass filter. The exact value was chosen to suit the recording equipment of that era.</p>
+</section>
+
+<section class="block" aria-labelledby="read-h2">
+<h2 id="read-h2">How to read this</h2>
+<details class="fold">
+<summary>Show how to read this</summary>
+<ul class="reading">
+<li>Sampling theorem: if the highest frequency in a wave is fmax, you can rebuild the wave exactly when the sampling rate fs is greater than 2 × fmax (fs &gt; 2 × fmax). In the chart above, f plays the role of fmax.</li>
+<li>Aliasing: for example, sample a 9 Hz wave at 10 Hz and it looks like a slow 1 Hz wave. When fs is too low, a fast wave turns into a slower one like this. The apparent frequency is the size of the difference between f and the multiple of fs closest to f (example: the gap between 9 and 10 is 1 Hz). In a DAW, you hear this as aliasing: inharmonic, metallic-sounding tones.</li>
+<li>Exactly 2× is the borderline. The samples can land where the wave looks flat, so this chart shifts the sample points slightly (phase 0.3, a small offset in where the wave starts) to keep the wave visible.</li>
+</ul>
+</details>
+</section>
+
+<section class="block" aria-labelledby="pcm-h2">
+<h2 id="pcm-h2">Calculate the data size of PCM</h2>
+<p>Enter the highest frequency, bits per sample and channels to get the data size of PCM audio. You don't enter a sampling rate: it is set to 2 × fmax automatically.</p>
+<div class="examples">
+<button type="button" class="example" data-fmax="4" data-bits="8" data-ch="1" aria-pressed="false">Example: telephone voice</button>
+<button type="button" class="example" data-fmax="22.05" data-bits="16" data-ch="2" aria-pressed="true">Example: music CD</button>
+</div>
+<p class="note">These are example inputs, not a guarantee of any standard or real specification. The music CD example uses fmax = 22.05 kHz so that the calculation gives the CD rate of 44.1 kHz; the actual sound reaches only about 20 kHz.</p>
+<div class="field">
+<label for="pcm-fmax">Highest frequency fmax <span class="unit">(kHz)</span></label>
+<input id="pcm-fmax" type="text" inputmode="decimal" autocomplete="off" value="22.05" aria-describedby="pcm-fmax-hint pcm-fmax-error">
+<p id="pcm-fmax-hint" class="hint">The highest frequency in the sound. Same idea as f in the chart above.</p>
+<p id="pcm-fmax-error" class="field-error"></p>
+</div>
+<div class="field">
+<label for="pcm-bits">Bits per sample (bit depth) <span class="unit">(bits)</span></label>
+<input id="pcm-bits" type="text" inputmode="numeric" autocomplete="off" value="16" aria-describedby="pcm-bits-hint pcm-bits-error">
+<p id="pcm-bits-hint" class="hint">How many bits record each sample. More bits means finer steps (8 bits = 256 levels, 16 bits = 65,536 levels).</p>
+<p id="pcm-bits-error" class="field-error"></p>
+</div>
+<div class="field">
+<label for="pcm-ch">Channels</label>
+<input id="pcm-ch" type="text" inputmode="numeric" autocomplete="off" value="2" aria-describedby="pcm-ch-hint pcm-ch-error">
+<p id="pcm-ch-hint" class="hint">The number of separate audio tracks. 1 = mono, 2 = stereo (left and right). Each extra channel adds its own share of data.</p>
+<p id="pcm-ch-error" class="field-error"></p>
+</div>
+<div class="results">
+<p id="pcm-empty" class="pcm-empty" hidden>Enter all three values to see the result.</p>
+<dl>
+<dt>Sampling rate used in the calculation (2 × fmax)</dt>
+<dd><span id="pcm-r1" class="value mono">—</span><span id="pcm-r1-formula" class="formula"></span></dd>
+<dt>Data rate</dt>
+<dd><span id="pcm-r2" class="value mono">—</span><span class="formula">sampling rate × bits per sample × channels</span></dd>
+<dt>Data size per minute</dt>
+<dd><span id="pcm-r3" class="value mono">—</span><span class="formula">data rate × 60 ÷ 8</span></dd>
+</dl>
+</div>
+<p id="pcm-live" class="visually-hidden" role="status" aria-live="polite"></p>
+<p class="note">The sampling rate is taken as 2 × fmax. Real standards often use a higher value. k and M mean 1,000 and 1,000,000 (not 1,024).</p>
+</section>
+
+<section class="block" aria-labelledby="quiz-h2">
+<h2 id="quiz-h2">Practice questions (original)</h2>
+<p>All four questions were written for this page.</p>
+<details class="quiz" id="q1" data-q="1" open>
+<summary><span class="quiz-number">Question 1</span> A sound contains frequencies up to 10 kHz. To digitize it without loss, which sampling rate does the theorem require?</summary>
+<fieldset>
+<legend class="quiz-legend">Question 1</legend>
+<label class="choice"><input type="radio" name="q1" value="0"> <span class="letter">A.</span> A value greater than 5 kHz</label>
+<label class="choice"><input type="radio" name="q1" value="1"> <span class="letter">B.</span> A value greater than 20 kHz</label>
+<label class="choice"><input type="radio" name="q1" value="2"> <span class="letter">C.</span> 10 kHz or more</label>
+<label class="choice"><input type="radio" name="q1" value="3"> <span class="letter">D.</span> Less than 20 kHz</label>
+</fieldset>
+<div class="quiz-actions"><button type="button" class="check" disabled aria-describedby="q1-hint">Check answer</button> <span id="q1-hint" class="hint">Choose an answer</span></div>
+<div class="quiz-result" id="q1-result" hidden>
+<p class="quiz-verdict"></p>
+<p class="quiz-explain">The sampling rate must be greater than twice the highest frequency. Twice 10 kHz is 20 kHz, and exactly 20 kHz is the borderline, so the condition is a rate greater than 20 kHz.</p>
+<button type="button" class="retry" hidden>Try again</button>
+</div>
+</details>
+<details class="quiz" id="q2" data-q="2">
+<summary><span class="quiz-number">Question 2</span> Mono audio is sampled at 8 kHz with 8 bits per sample. What is the data rate?</summary>
+<fieldset>
+<legend class="quiz-legend">Question 2</legend>
+<label class="choice"><input type="radio" name="q2" value="0"> <span class="letter">A.</span> 8 kbit/s</label>
+<label class="choice"><input type="radio" name="q2" value="1"> <span class="letter">B.</span> 16 kbit/s</label>
+<label class="choice"><input type="radio" name="q2" value="2"> <span class="letter">C.</span> 64 kbit/s</label>
+<label class="choice"><input type="radio" name="q2" value="3"> <span class="letter">D.</span> 128 kbit/s</label>
+</fieldset>
+<div class="quiz-actions"><button type="button" class="check" disabled aria-describedby="q2-hint">Check answer</button> <span id="q2-hint" class="hint">Choose an answer</span></div>
+<div class="quiz-result" id="q2-result" hidden>
+<p class="quiz-verdict"></p>
+<p class="quiz-explain">8,000 samples/s × 8 bits × 1 channel = 64,000 bit/s = 64 kbit/s.</p>
+<button type="button" class="retry" hidden>Try again</button>
+</div>
+</details>
+<details class="quiz" id="q3" data-q="3">
+<summary><span class="quiz-number">Question 3</span> A 9 Hz sine wave is sampled at 10 Hz. What frequency does the wave through the samples appear to have?</summary>
+<fieldset>
+<legend class="quiz-legend">Question 3</legend>
+<label class="choice"><input type="radio" name="q3" value="0"> <span class="letter">A.</span> 1 Hz</label>
+<label class="choice"><input type="radio" name="q3" value="1"> <span class="letter">B.</span> 9 Hz</label>
+<label class="choice"><input type="radio" name="q3" value="2"> <span class="letter">C.</span> 10 Hz</label>
+<label class="choice"><input type="radio" name="q3" value="3"> <span class="letter">D.</span> 19 Hz</label>
+</fieldset>
+<div class="quiz-actions"><button type="button" class="check" disabled aria-describedby="q3-hint">Check answer</button> <span id="q3-hint" class="hint">Choose an answer</span></div>
+<div class="quiz-result" id="q3-result" hidden>
+<p class="quiz-verdict"></p>
+<p class="quiz-explain">10 Hz is less than twice 9 Hz, so aliasing occurs. The apparent frequency is |9 − 10| = 1 Hz. Set f = 9 and fs = 10 in the chart above to see it.</p>
+<button type="button" class="retry" hidden>Try again</button>
+</div>
+</details>
+<details class="quiz" id="q4" data-q="4">
+<summary><span class="quiz-number">Question 4</span> Stereo (2 channels) audio is recorded for one minute at 44.1 kHz and 16 bits per sample. About how large is the data (1 MB = 1,000,000 bytes)?</summary>
+<fieldset>
+<legend class="quiz-legend">Question 4</legend>
+<label class="choice"><input type="radio" name="q4" value="0"> <span class="letter">A.</span> About 1.3 MB</label>
+<label class="choice"><input type="radio" name="q4" value="1"> <span class="letter">B.</span> About 2.6 MB</label>
+<label class="choice"><input type="radio" name="q4" value="2"> <span class="letter">C.</span> About 5.3 MB</label>
+<label class="choice"><input type="radio" name="q4" value="3"> <span class="letter">D.</span> About 10.6 MB</label>
+</fieldset>
+<div class="quiz-actions"><button type="button" class="check" disabled aria-describedby="q4-hint">Check answer</button> <span id="q4-hint" class="hint">Choose an answer</span></div>
+<div class="quiz-result" id="q4-result" hidden>
+<p class="quiz-verdict"></p>
+<p class="quiz-explain">44,100 × 16 × 2 = 1,411,200 bit/s. × 60 ÷ 8 = 10,584,000 bytes, about 10.6 MB. Watch for mixing up bits and bytes (8 bits).</p>
+<button type="button" class="retry" hidden>Try again</button>
+</div>
+</details>
+</section>
+</main>
+<footer class="site-footer">
+<p>All practice questions are original and were written for this page.</p>
+<p><a href="https://github.com/R38K51/hands-on-sampling-theorem" rel="noopener noreferrer">Source code (GitHub)</a></p>
+</footer>
+</body>
+</html>
